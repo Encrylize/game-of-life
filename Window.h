@@ -15,9 +15,15 @@ public:
     void set_draw_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
     void draw_rect(int x, int y, int w, int h);
 
+    int get_width() const { return _width; }
+    int get_height() const { return _height; }
+
 private:
     std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> _win;
     std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> _rend;
+
+    int _width;
+    int _height;
 };
 
 #endif

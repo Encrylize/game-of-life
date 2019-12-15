@@ -5,7 +5,8 @@
 
 
 Window::Window(const char* title, int x, int y, int w, int h, Uint32 flags)
-    : _win(nullptr, SDL_DestroyWindow), _rend(nullptr, SDL_DestroyRenderer) {
+    : _win(nullptr, SDL_DestroyWindow), _rend(nullptr, SDL_DestroyRenderer),
+    _width(w), _height(h) {
     std::stringstream error;
 
     _win.reset(SDL_CreateWindow(title, x, y, w, h, flags));

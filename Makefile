@@ -1,7 +1,7 @@
 CC := g++
 CFLAGS := -lSDL2 --std=c++17
-HDRS := LLCellularAutomaton.h Window.h
-SRCS := main.cpp LLCellularAutomaton.cpp Window.cpp
+HDRS := GridViewer.h LLCellularAutomaton.h Window.h
+SRCS := main.cpp GridViewer.cpp LLCellularAutomaton.cpp Window.cpp
 OBJS := $(SRCS:.cpp=.o)
 EXEC := main
 

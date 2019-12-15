@@ -16,9 +16,10 @@ public:
 private:
     using GridRow = std::vector<CellState>;
     using Grid = std::vector<GridRow>;
-    using GridSize = Grid::size_type;
 
 public:
+    using GridSize = Grid::size_type;
+
     LLCellularAutomaton(GridSize w, GridSize h);
 
     void advance();
@@ -27,6 +28,9 @@ public:
     void set_cell_state(GridSize x, GridSize y, CellState state);
 
     void print_grid() const;
+
+    GridSize get_width() const { return _w; }
+    GridSize get_height() const { return _h; }
 
 private:
     uint8_t get_neighborhood_sum(GridSize x, GridSize y) const;
