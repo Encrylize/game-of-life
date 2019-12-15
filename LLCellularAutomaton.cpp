@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "LLCellularAutomaton.h"
 
 
@@ -32,6 +34,16 @@ LLCellularAutomaton::CellState LLCellularAutomaton::get_cell_state(
 void LLCellularAutomaton::set_cell_state(GridSize x, GridSize y,
         CellState state) {
     _grid[y][x] = state;
+}
+
+void LLCellularAutomaton::print_grid() const {
+    for (auto& row : _grid) {
+        for (auto cell_state : row) {
+            std::cout << (cell_state == CellState::ALIVE ? "X" : "O");
+        }
+
+        std::cout << std::endl;
+    }
 }
 
 uint8_t LLCellularAutomaton::get_neighborhood_sum(GridSize x, GridSize y) const {

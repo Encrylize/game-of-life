@@ -26,6 +26,8 @@ public:
     CellState get_cell_state(GridSize x, GridSize y) const;
     void set_cell_state(GridSize x, GridSize y, CellState state);
 
+    void print_grid() const;
+
 private:
     uint8_t get_neighborhood_sum(GridSize x, GridSize y) const;
 
