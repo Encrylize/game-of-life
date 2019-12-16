@@ -18,8 +18,7 @@ private:
     Window _win;
     LLCellularAutomaton _llca;
 
-    const int cell_width = 32;
-    const int cell_height = 32;
+    static const int _cell_size;
 };
 
 #endif

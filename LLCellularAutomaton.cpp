@@ -3,14 +3,14 @@
 #include "LLCellularAutomaton.h"
 
 
-LLCellularAutomaton::LLCellularAutomaton(GridSize w, GridSize h) :
-    _grid(h, GridRow(w, CellState::DEAD)), _w(w), _h(h) {}
+LLCellularAutomaton::LLCellularAutomaton(Vector2D<GridSize> size) :
+    _grid(size.y, GridRow(size.x, CellState::DEAD)), _size(size) {}
 
 void LLCellularAutomaton::advance() {
-    Grid new_grid(_h, GridRow(_w));
-    for (GridSize y = 0; y < _h; y++) {
-        for (GridSize x = 0; x < _w; x++) {
-            switch (get_neighborhood_sum(x, y)) {
+    Grid new_grid(_size.y, GridRow(_size.x));
+    for (GridSize y = 0; y < _size.y; y++) {
+        for (GridSize x = 0; x < _size.x; x++) {
+            switch (get_neighborhood_sum(Vector2D<GridSize>(x, y))) {
                 case 3:
                     new_grid[y][x] = CellState::ALIVE;
                     break;
@@ -27,13 +27,13 @@ void LLCellularAutomaton::advance() {
 }
 
 LLCellularAutomaton::CellState LLCellularAutomaton::get_cell_state(
-        GridSize x, GridSize y) const {
-    return _grid[y][x];
+        Vector2D<GridSize> pos) const {
+    return _grid[pos.y][pos.x];
 }
 
-void LLCellularAutomaton::set_cell_state(GridSize x, GridSize y,
+void LLCellularAutomaton::set_cell_state(Vector2D<GridSize> pos,
         CellState state) {
-    _grid[y][x] = state;
+    _grid[pos.y][pos.x] = state;
 }
 
 void LLCellularAutomaton::print_grid() const {
@@ -46,21 +46,26 @@ void LLCellularAutomaton::print_grid() const {
     }
 }
 
-uint8_t LLCellularAutomaton::get_neighborhood_sum(GridSize x, GridSize y) const {
+Vector2D<LLCellularAutomaton::GridSize> LLCellularAutomaton::get_size() const {
+    return _size;
+}
+
+uint8_t LLCellularAutomaton::get_neighborhood_sum(Vector2D<GridSize> pos)
+    const {
     uint8_t sum = 0;
 
     for (int8_t x_i = -1; x_i <= 1; x_i++) {
-        auto x_pos = x + x_i;
-        if (x_pos < 0 || x_pos >= _w) {
+        auto x = pos.x + x_i;
+        if (x < 0 || x >= _size.x) {
             continue;
         }
 
         for (int8_t y_i = -1; y_i <= 1; y_i++) {
-            auto y_pos = y + y_i;
-            if (y_pos < 0 || y_pos >= _h) {
+            auto y = pos.y + y_i;
+            if (y < 0 || y >= _size.y) {
                 continue;
             }
-            sum += _grid[y_pos][x_pos];
+            sum += _grid[y][x];
         }
     }
 

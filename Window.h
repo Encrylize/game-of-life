@@ -4,26 +4,26 @@
 #include <memory>
 #include <SDL2/SDL.h>
 
+#include "Vector2D.h"
 
-// TODO: Abstract away underlying implementation more
+
 class Window {
 public:
-    Window(const char* title, int x, int y, int w, int h, Uint32 flags);
+    Window(const std::string& title, Vector2D<int> pos, Vector2D<int> size,
+            uint32_t flags);
 
     void clear();
     void update();
     void set_draw_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-    void draw_rect(int x, int y, int w, int h);
+    void draw_rect(Vector2D<int> pos, Vector2D<int> size);
 
-    int get_width() const { return _width; }
-    int get_height() const { return _height; }
+    Vector2D<int> get_size() const;
 
 private:
     std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> _win;
     std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> _rend;
 
-    int _width;
-    int _height;
+    Vector2D<int> _size;
 };
 
 #endif

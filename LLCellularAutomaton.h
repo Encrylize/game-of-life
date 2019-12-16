@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "Vector2D.h"
+
 // Follows standard Game of Life rules for now
 // TODO: Implement rulestrings
 class LLCellularAutomaton {
@@ -20,23 +22,22 @@ private:
 public:
     using GridSize = Grid::size_type;
 
-    LLCellularAutomaton(GridSize w, GridSize h);
+    LLCellularAutomaton(Vector2D<GridSize> size);
 
     void advance();
 
-    CellState get_cell_state(GridSize x, GridSize y) const;
-    void set_cell_state(GridSize x, GridSize y, CellState state);
+    CellState get_cell_state(Vector2D<GridSize> pos) const;
+    void set_cell_state(Vector2D<GridSize> pos, CellState state);
 
     void print_grid() const;
 
-    GridSize get_width() const { return _w; }
-    GridSize get_height() const { return _h; }
+    Vector2D<GridSize> get_size() const;
 
 private:
-    uint8_t get_neighborhood_sum(GridSize x, GridSize y) const;
+    uint8_t get_neighborhood_sum(Vector2D<GridSize> pos) const;
 
     Grid _grid;
-    GridSize _w, _h;
+    Vector2D<GridSize> _size;
 };
 
 #endif
