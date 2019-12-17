@@ -6,6 +6,7 @@
 
 #include "Vector2D.h"
 
+
 // Follows standard Game of Life rules for now
 // TODO: Implement rulestrings
 class LLCellularAutomaton {
@@ -39,5 +40,7 @@ private:
     Grid _grid;
     Vector2D<GridSize> _size;
 };
+
+using LLCA = LLCellularAutomaton;
 
 #endif
