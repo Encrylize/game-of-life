@@ -8,7 +8,7 @@ GridViewer::GridViewer() :
     _win("Title",
             Vector2D<int>(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED),
             Vector2D<int>(640, 480), 0),
-    _llca(Vector2D<LLCA::GridSize>(128, 128)) {
+    _llca("B3/S23", Vector2D<LLCA::GridSize>(128, 128)) {
     // Glider
     _llca.set_cell_state(Vector2D<LLCA::GridSize>(0, 2), LLCA::CellState::ALIVE);
     _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 3), LLCA::CellState::ALIVE);
