@@ -43,6 +43,12 @@ void LLCellularAutomaton::set_cell_state(Vector2D<GridSize> pos,
     _grid[pos.y][pos.x] = state;
 }
 
+void LLCellularAutomaton::toggle_cell_state(Vector2D<GridSize> pos) {
+    auto new_state = get_cell_state(pos) == CellState::DEAD ?
+        CellState::ALIVE : CellState::DEAD;
+    set_cell_state(pos, new_state);
+}
+
 Vector2D<LLCellularAutomaton::GridSize> LLCellularAutomaton::get_size() const {
     return _size;
 }
@@ -86,6 +92,7 @@ std::set<uint8_t> LLCellularAutomaton::RulestringParser::eat_sums(
     return sums;
 }
 
+// TODO: Count neighbours outside grid as dead
 uint8_t LLCellularAutomaton::get_neighborhood_sum(Vector2D<GridSize> pos)
     const {
     uint8_t sum = 0;

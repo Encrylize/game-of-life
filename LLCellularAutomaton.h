@@ -29,6 +29,7 @@ public:
 
     CellState get_cell_state(Vector2D<GridSize> pos) const;
     void set_cell_state(Vector2D<GridSize> pos, CellState state);
+    void toggle_cell_state(Vector2D<GridSize> pos);
 
     Vector2D<GridSize> get_size() const;
 

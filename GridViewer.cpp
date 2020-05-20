@@ -1,7 +1,8 @@
 #include "GridViewer.h"
 
 
-const unsigned GridViewer::_cell_size = 32;
+const unsigned GridViewer::_cell_size = 30;
+const unsigned GridViewer::_grid_width = 2;
 
 
 GridViewer::GridViewer() :
@@ -9,28 +10,33 @@ GridViewer::GridViewer() :
             Vector2D<int>(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED),
             Vector2D<int>(640, 480), 0),
     _llca("B3/S23", Vector2D<LLCA::GridSize>(32, 32)), _top_left(0, 0),
-    _view_size(_win.get_size() / _cell_size) {
+    _view_size(get_view_size()), _running(false) {
     // Glider
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(0, 2), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 3), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(2, 1), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(2, 2), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(2, 3), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::GridSize>(0, 2), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 3), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::GridSize>(2, 1), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::GridSize>(2, 2), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::GridSize>(2, 3), LLCA::CellState::ALIVE);
 
     // Blinker
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 0), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 1), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 2), LLCA::CellState::ALIVE);
+    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 0), LLCA::CellState::ALIVE);
+    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 1), LLCA::CellState::ALIVE);
+    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 2), LLCA::CellState::ALIVE);
 
     // Blinker
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(30, 0), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(30, 1), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(30, 2), LLCA::CellState::ALIVE);
+    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(30, 0), LLCA::CellState::ALIVE);
+    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(30, 1), LLCA::CellState::ALIVE);
+    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(30, 2), LLCA::CellState::ALIVE);
 
     // Blinker
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 29), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 30), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 31), LLCA::CellState::ALIVE);
+    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 29), LLCA::CellState::ALIVE);
+    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 30), LLCA::CellState::ALIVE);
+    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 31), LLCA::CellState::ALIVE);
+}
+
+Vector2D<LLCA::GridSize> GridViewer::get_view_size() const {
+    auto vec = _win.get_size() / (float) (_cell_size + _grid_width);
+    return Vector2D<LLCA::GridSize>(std::ceil(vec.x), std::ceil(vec.y));
 }
 
 // TODO: FPS
@@ -47,17 +53,23 @@ void GridViewer::loop() {
                         (event.key.keysym.sym == SDLK_j)
                             - (event.key.keysym.sym == SDLK_k));
                 move_view_by(move_by);
+            } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+                Vector2D<LLCA::GridSize> pos(event.button.x, event.button.y);
+                pos /= (_cell_size + _grid_width);
+                _llca.toggle_cell_state(_top_left + pos);
             }
         }
 
-        _llca.advance();
+        if (_running) {
+            _llca.advance();
+        }
         draw();
         SDL_Delay(150);
     }
 }
 
 void GridViewer::draw() {
-    _win.set_draw_color(255, 255, 255, 255);
+    _win.set_draw_color(127, 127, 127, 255);
     _win.clear();
 
     for (LLCA::GridSize x = 0; x < _view_size.x; x++) {
@@ -69,9 +81,11 @@ void GridViewer::draw() {
                 _win.set_draw_color(255, 255, 255, 255);
             }
 
-            _win.draw_rect(
-                    Vector2D<int>(x * _cell_size, y * _cell_size),
-                    Vector2D<int>(_cell_size, _cell_size));
+            const Vector2D<int> pos(
+                    x * (_cell_size + _grid_width) + _grid_width / 2,
+                    y * (_cell_size + _grid_width) + _grid_width / 2);
+
+            _win.draw_rect(pos, Vector2D<int>(_cell_size, _cell_size));
         }
     }
 
