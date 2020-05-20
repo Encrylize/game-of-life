@@ -47,12 +47,16 @@ void GridViewer::loop() {
             if (event.type == SDL_QUIT) {
                 return;
             } else if (event.type == SDL_KEYDOWN) {
-                Vector2D<MoveByType> move_by(
-                        (event.key.keysym.sym == SDLK_l)
-                            - (event.key.keysym.sym == SDLK_h),
-                        (event.key.keysym.sym == SDLK_j)
-                            - (event.key.keysym.sym == SDLK_k));
-                move_view_by(move_by);
+                if (event.key.keysym.sym == SDLK_SPACE) {
+                    _running = !_running;
+                } else {
+                    Vector2D<MoveByType> move_by(
+                            (event.key.keysym.sym == SDLK_l)
+                                - (event.key.keysym.sym == SDLK_h),
+                            (event.key.keysym.sym == SDLK_j)
+                                - (event.key.keysym.sym == SDLK_k));
+                    move_view_by(move_by);
+                }
             } else if (event.type == SDL_MOUSEBUTTONDOWN) {
                 Vector2D<LLCA::GridSize> pos(event.button.x, event.button.y);
                 pos /= (_cell_size + _grid_width);
