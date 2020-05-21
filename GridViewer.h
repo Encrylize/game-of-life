@@ -25,9 +25,11 @@ private:
     Vector2D<LLCA::GridSize> _top_left;
     Vector2D<LLCA::GridSize> _view_size;
     bool _running;
+    unsigned _iter_per_sec;
 
     static const unsigned _cell_size;
     static const unsigned _grid_width;
+    static const unsigned _iter_step;
 };
 
 #endif

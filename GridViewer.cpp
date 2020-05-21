@@ -1,16 +1,18 @@
-#include "GridViewer.h"
+#include <iostream>
+#include <limits>
 
+#include "GridViewer.h"
 
 const unsigned GridViewer::_cell_size = 30;
 const unsigned GridViewer::_grid_width = 2;
-
+const unsigned GridViewer::_iter_step = 1;
 
 GridViewer::GridViewer() :
     _win("Title",
             Vector2D<int>(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED),
             Vector2D<int>(640, 480), 0),
     _llca("B3/S23", Vector2D<LLCA::GridSize>(32, 32)), _top_left(0, 0),
-    _view_size(get_view_size()), _running(false) {
+    _view_size(get_view_size()), _running(false), _iter_per_sec(1) {
     // Glider
     _llca.set_cell_state(Vector2D<LLCA::GridSize>(0, 2), LLCA::CellState::ALIVE);
     _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 3), LLCA::CellState::ALIVE);
@@ -39,8 +41,9 @@ Vector2D<LLCA::GridSize> GridViewer::get_view_size() const {
     return Vector2D<LLCA::GridSize>(std::ceil(vec.x), std::ceil(vec.y));
 }
 
-// TODO: FPS
 void GridViewer::loop() {
+    Uint32 last_tick = SDL_GetTicks();
+    Uint32 next_tick;
     while (true) {
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0) {
@@ -49,6 +52,15 @@ void GridViewer::loop() {
             } else if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_SPACE) {
                     _running = !_running;
+                    last_tick = SDL_GetTicks();
+                    next_tick = last_tick + 1000 / _iter_per_sec;
+                } else if (event.key.keysym.sym == SDLK_MINUS &&
+                        _iter_per_sec > _iter_step) {
+                    _iter_per_sec -= _iter_step;
+                } else if (event.key.keysym.sym == SDLK_PLUS &&
+                        _iter_per_sec <=
+                            std::numeric_limits<Uint32>::max() - _iter_step) {
+                    _iter_per_sec += _iter_step;
                 } else {
                     Vector2D<MoveByType> move_by(
                             (event.key.keysym.sym == SDLK_l)
@@ -64,11 +76,14 @@ void GridViewer::loop() {
             }
         }
 
-        if (_running) {
+        if (_running && SDL_GetTicks() >= next_tick) {
             _llca.advance();
+            Uint32 ticks_per_update = SDL_GetTicks() - last_tick;
+            std::cout << ticks_per_update << std::endl;
+            last_tick = SDL_GetTicks();
+            next_tick += 1000 / _iter_per_sec;
         }
         draw();
-        SDL_Delay(150);
     }
 }
 

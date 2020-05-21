@@ -92,7 +92,6 @@ std::set<uint8_t> LLCellularAutomaton::RulestringParser::eat_sums(
     return sums;
 }
 
-// TODO: Count neighbours outside grid as dead
 uint8_t LLCellularAutomaton::get_neighborhood_sum(Vector2D<GridSize> pos)
     const {
     uint8_t sum = 0;
