@@ -16,14 +16,12 @@ public:
 private:
     void draw();
 
-    using MoveByType = std::make_signed<LLCA::GridSize>::type;
-    void move_view_by(const Vector2D<MoveByType>& by);
-    Vector2D<LLCA::GridSize> get_view_size() const;
+    Vector2D<LLCA::CellPos> get_view_size() const;
 
     Window _win;
     LLCellularAutomaton _llca;
-    Vector2D<LLCA::GridSize> _top_left;
-    Vector2D<LLCA::GridSize> _view_size;
+    Vector2D<LLCA::CellPos> _top_left;
+    Vector2D<LLCA::CellPos> _view_size;
     bool _running;
     unsigned _iter_per_sec;
 

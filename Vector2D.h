@@ -1,7 +1,11 @@
 #ifndef _VECTOR_2D_H
 #define _VECTOR_2D_H
 
-#include <type_traits>
+#include <functional>
+
+#include "utils.h"
+
+// TODO: Inline
 
 
 template <typename T>
@@ -14,9 +18,18 @@ public:
     Vector2D(const Vector2D<U>& vec);
 
     template <typename U>
+    Vector2D& operator +=(const U& other);
+    template <typename U>
     Vector2D& operator /=(const U& div);
 
     T x, y;
+};
+
+template <typename T>
+struct std::hash<Vector2D<T>> {
+    size_t operator ()(const Vector2D<T>& vec) const {
+        return utils::hash_combine(utils::hash_combine(0, vec.x), vec.y);
+    }
 };
 
 template <typename T>
@@ -28,6 +41,13 @@ Vector2D<T>::Vector2D(T x, T y) : x(x), y(y) {}
 template <typename T>
 template <typename U>
 Vector2D<T>::Vector2D(const Vector2D<U>& vec) : x(vec.x), y(vec.y) {}
+
+template <typename T>
+template <typename U>
+Vector2D<T>& Vector2D<T>::operator +=(const U& other) {
+    *this = *this + other;
+    return *this;
+}
 
 template <typename T>
 template <typename U>
@@ -49,6 +69,11 @@ auto operator -(const Vector2D<T>& a, const Vector2D<U>& b) {
 template <typename T, typename U>
 auto operator /(const Vector2D<T>& vec, const U& div) {
     return Vector2D<decltype(T() / U())>(vec.x / div, vec.y / div);
+}
+
+template <typename T, typename U>
+bool operator ==(const Vector2D<T>& a, const Vector2D<U>& b) {
+    return a.x == b.x && a.y == b.y;
 }
 
 #endif

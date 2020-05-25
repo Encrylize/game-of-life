@@ -11,34 +11,19 @@ GridViewer::GridViewer() :
     _win("Title",
             Vector2D<int>(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED),
             Vector2D<int>(640, 480), 0),
-    _llca("B3/S23", Vector2D<LLCA::GridSize>(32, 32)), _top_left(0, 0),
-    _view_size(get_view_size()), _running(false), _iter_per_sec(1) {
+    _llca("B3/S23"), _top_left(0, 0), _view_size(get_view_size()),
+    _running(false), _iter_per_sec(1) {
     // Glider
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(0, 2), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 3), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(2, 1), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(2, 2), LLCA::CellState::ALIVE);
-    _llca.set_cell_state(Vector2D<LLCA::GridSize>(2, 3), LLCA::CellState::ALIVE);
-
-    // Blinker
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 0), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 1), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 2), LLCA::CellState::ALIVE);
-
-    // Blinker
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(30, 0), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(30, 1), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(30, 2), LLCA::CellState::ALIVE);
-
-    // Blinker
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 29), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 30), LLCA::CellState::ALIVE);
-    //_llca.set_cell_state(Vector2D<LLCA::GridSize>(1, 31), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::CellPos>(0, 2), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::CellPos>(1, 3), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::CellPos>(2, 1), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::CellPos>(2, 2), LLCA::CellState::ALIVE);
+    _llca.set_cell_state(Vector2D<LLCA::CellPos>(2, 3), LLCA::CellState::ALIVE);
 }
 
-Vector2D<LLCA::GridSize> GridViewer::get_view_size() const {
+Vector2D<LLCA::CellPos> GridViewer::get_view_size() const {
     auto vec = _win.get_size() / (float) (_cell_size + _grid_width);
-    return Vector2D<LLCA::GridSize>(std::ceil(vec.x), std::ceil(vec.y));
+    return Vector2D<LLCA::CellPos>(std::ceil(vec.x), std::ceil(vec.y));
 }
 
 void GridViewer::loop() {
@@ -62,15 +47,15 @@ void GridViewer::loop() {
                             std::numeric_limits<Uint32>::max() - _iter_step) {
                     _iter_per_sec += _iter_step;
                 } else {
-                    Vector2D<MoveByType> move_by(
+                    Vector2D<LLCA::CellPos> move_by(
                             (event.key.keysym.sym == SDLK_l)
                                 - (event.key.keysym.sym == SDLK_h),
                             (event.key.keysym.sym == SDLK_j)
                                 - (event.key.keysym.sym == SDLK_k));
-                    move_view_by(move_by);
+                    _top_left += move_by;
                 }
             } else if (event.type == SDL_MOUSEBUTTONDOWN) {
-                Vector2D<LLCA::GridSize> pos(event.button.x, event.button.y);
+                Vector2D<LLCA::CellPos> pos(event.button.x, event.button.y);
                 pos /= (_cell_size + _grid_width);
                 _llca.toggle_cell_state(_top_left + pos);
             }
@@ -91,9 +76,9 @@ void GridViewer::draw() {
     _win.set_draw_color(127, 127, 127, 255);
     _win.clear();
 
-    for (LLCA::GridSize x = 0; x < _view_size.x; x++) {
-        for (LLCA::GridSize y = 0; y < _view_size.y; y++) {
-            auto cell_pos = _top_left + Vector2D<LLCA::GridSize>(x, y);
+    for (LLCA::CellPos x = 0; x < _view_size.x; x++) {
+        for (LLCA::CellPos y = 0; y < _view_size.y; y++) {
+            auto cell_pos = _top_left + Vector2D<LLCA::CellPos>(x, y);
             if (_llca.get_cell_state(cell_pos) == LLCA::CellState::ALIVE) {
                 _win.set_draw_color(0, 0, 0, 0);
             } else {
@@ -109,24 +94,4 @@ void GridViewer::draw() {
     }
 
     _win.update();
-}
-
-void GridViewer::move_view_by(const Vector2D<MoveByType>& by) {
-    // This is pretty ugly, but I can't think of a better
-    // way that isn't susceptible to overflow or underflow.
-    auto grid_size = _llca.get_size();
-    auto max_top_left = grid_size - _view_size;
-
-    auto constrain_coord = [](auto by, auto& top_left, auto max_top_left) {
-        if (by < 0 && (LLCA::GridSize) std::abs(by) > top_left) {
-            top_left = 0;
-        } else if (by > 0 && (LLCA::GridSize) by > max_top_left - top_left) {
-            top_left = max_top_left;
-        } else {
-            top_left += by;
-        }
-    };
-
-    constrain_coord(by.x, _top_left.x, max_top_left.x);
-    constrain_coord(by.y, _top_left.y, max_top_left.y);
 }
