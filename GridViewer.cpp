@@ -27,8 +27,8 @@ Vector2D<LLCA::CellPos> GridViewer::get_view_size() const {
 }
 
 void GridViewer::loop() {
-    Uint32 last_tick = SDL_GetTicks();
-    Uint32 next_tick;
+    Uint32 last_tick = 0;
+    Uint32 next_tick = 0;
     while (true) {
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0) {

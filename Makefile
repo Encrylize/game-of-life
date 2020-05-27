@@ -1,4 +1,4 @@
-CC := g++
+CXX := clang++
 CFLAGS := -lSDL2 --std=c++17 -g
 HDRS := GridViewer.h LLCellularAutomaton.h Window.h utils.h
 SRCS := main.cpp GridViewer.cpp LLCellularAutomaton.cpp Window.cpp
@@ -8,7 +8,7 @@ EXEC := main
 all: $(EXEC)
 
 $(EXEC): $(OBJS) $(HDRS) Makefile
-	$(CC) -o $@ $(OBJS) $(CFLAGS)
+	$(CXX) -o $@ $(OBJS) $(CFLAGS)
 
 clean:
 	rm -f $(EXEC) $(OBJS)
