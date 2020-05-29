@@ -1,16 +1,25 @@
 CXX := clang++
-CFLAGS := -lSDL2 --std=c++17 -g
-HDRS := GridViewer.h LLCellularAutomaton.h Window.h utils.h
-SRCS := main.cpp GridViewer.cpp LLCellularAutomaton.cpp Window.cpp
-OBJS := $(SRCS:.cpp=.o)
-EXEC := main
+CFLAGS := --std=c++17 -g -Wall
+LIB := -lSDL2
 
-all: $(EXEC)
+SRCDIR := src
+BUILDDIR := build
+SRCEXT := cpp
+HDREXT := h
 
-$(EXEC): $(OBJS) $(HDRS) Makefile
-	$(CXX) -o $@ $(OBJS) $(CFLAGS)
+SRCS := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+HDRS := $(shell find $(SRCDIR) -type f -name *.$(HDREXT))
+OBJS := $(SRCS:$(SRCDIR)/%.$(SRCEXT)=$(BUILDDIR)/%.o)
+EXEC := $(BUILDDIR)/main
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(HDRS)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) -c -o $@ $< $(CFLAGS)
+
+$(EXEC): $(OBJS) Makefile
+	$(CXX) -o $@ $(OBJS) $(CFLAGS) $(LIB)
 
 clean:
 	rm -f $(EXEC) $(OBJS)
 
-.PHONY: all clean
+.PHONY: clean

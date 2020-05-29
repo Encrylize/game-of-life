@@ -7,12 +7,15 @@ const unsigned GridViewer::_cell_size = 30;
 const unsigned GridViewer::_grid_width = 2;
 const unsigned GridViewer::_iter_step = 1;
 
-GridViewer::GridViewer() :
-    _win("Title",
-            Vector2D<int>(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED),
-            Vector2D<int>(640, 480), 0),
-    _llca("B3/S23"), _top_left(0, 0), _view_size(get_view_size()),
-    _running(false), _iter_per_sec(1) {
+GridViewer::GridViewer()
+    : _win("Title",
+           Vector2D<int>(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED),
+           Vector2D<int>(640, 480), 0),
+      _llca("B3/S23"),
+      _top_left(0, 0),
+      _view_size(get_view_size()),
+      _running(false),
+      _iter_per_sec(1) {
     // Glider
     _llca.set_cell_state(Vector2D<LLCA::CellPos>(0, 2), LLCA::CellState::ALIVE);
     _llca.set_cell_state(Vector2D<LLCA::CellPos>(1, 3), LLCA::CellState::ALIVE);
@@ -39,19 +42,19 @@ void GridViewer::loop() {
                     _running = !_running;
                     last_tick = SDL_GetTicks();
                     next_tick = last_tick + 1000 / _iter_per_sec;
-                } else if (event.key.keysym.sym == SDLK_MINUS &&
-                        _iter_per_sec > _iter_step) {
+                } else if (event.key.keysym.sym == SDLK_MINUS
+                           && _iter_per_sec > _iter_step) {
                     _iter_per_sec -= _iter_step;
-                } else if (event.key.keysym.sym == SDLK_PLUS &&
-                        _iter_per_sec <=
-                            std::numeric_limits<Uint32>::max() - _iter_step) {
+                } else if (event.key.keysym.sym == SDLK_PLUS
+                           && _iter_per_sec <= std::numeric_limits<Uint32>::max()
+                                                   - _iter_step) {
                     _iter_per_sec += _iter_step;
                 } else {
                     Vector2D<LLCA::CellPos> move_by(
-                            (event.key.keysym.sym == SDLK_l)
-                                - (event.key.keysym.sym == SDLK_h),
-                            (event.key.keysym.sym == SDLK_j)
-                                - (event.key.keysym.sym == SDLK_k));
+                        (event.key.keysym.sym == SDLK_l)
+                            - (event.key.keysym.sym == SDLK_h),
+                        (event.key.keysym.sym == SDLK_j)
+                            - (event.key.keysym.sym == SDLK_k));
                     _top_left += move_by;
                 }
             } else if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -86,8 +89,8 @@ void GridViewer::draw() {
             }
 
             const Vector2D<int> pos(
-                    x * (_cell_size + _grid_width) + _grid_width / 2,
-                    y * (_cell_size + _grid_width) + _grid_width / 2);
+                x * (_cell_size + _grid_width) + _grid_width / 2,
+                y * (_cell_size + _grid_width) + _grid_width / 2);
 
             _win.draw_rect(pos, Vector2D<int>(_cell_size, _cell_size));
         }

@@ -3,14 +3,15 @@
 
 #include "Window.h"
 
-
 Window::Window(const std::string& title, Vector2D<int> pos, Vector2D<int> size,
-        uint32_t flags) :
-    _win(nullptr, SDL_DestroyWindow), _rend(nullptr, SDL_DestroyRenderer),
-    _size(size) {
+               uint32_t flags)
+    : _win(nullptr, SDL_DestroyWindow),
+      _rend(nullptr, SDL_DestroyRenderer),
+      _size(size) {
     std::stringstream error;
 
-    _win.reset(SDL_CreateWindow(title.c_str(), pos.x, pos.y, size.x, size.y, flags));
+    _win.reset(
+        SDL_CreateWindow(title.c_str(), pos.x, pos.y, size.x, size.y, flags));
     if (_win == nullptr) {
         error << "Error creating window: " << SDL_GetError();
         throw std::runtime_error(error.str());
@@ -22,7 +23,6 @@ Window::Window(const std::string& title, Vector2D<int> pos, Vector2D<int> size,
         throw std::runtime_error(error.str());
     }
 }
-
 
 void Window::clear() {
     SDL_RenderClear(_rend.get());

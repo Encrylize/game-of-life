@@ -3,7 +3,6 @@
 
 #include "LLCellularAutomaton.h"
 
-
 LLCA::LLCellularAutomaton(const std::string& rulestring) {
     RulestringParser rulestring_parser(rulestring);
     _birth_sums = rulestring_parser.eat_sums('B', '/');
@@ -37,8 +36,9 @@ void LLCA::advance() {
 }
 
 LLCA::CellState LLCA::get_cell_state(Vector2D<CellPos> pos) const {
-    return utils::contains<Vector2D<CellPos>>(_live_cells, pos) ?
-        CellState::ALIVE : CellState::DEAD;
+    return utils::contains<Vector2D<CellPos>>(_live_cells, pos)
+               ? CellState::ALIVE
+               : CellState::DEAD;
 }
 
 void LLCA::set_cell_state(Vector2D<CellPos> pos, CellState state) {
@@ -53,14 +53,14 @@ void LLCA::set_cell_state(Vector2D<CellPos> pos, CellState state) {
 }
 
 void LLCA::toggle_cell_state(Vector2D<CellPos> pos) {
-    auto new_state = get_cell_state(pos) == CellState::DEAD ?
-        CellState::ALIVE : CellState::DEAD;
+    auto new_state = get_cell_state(pos) == CellState::DEAD ? CellState::ALIVE
+                                                            : CellState::DEAD;
     set_cell_state(pos, new_state);
 }
 
 // TODO: Throw more appropriate custom exception
-LLCA::RulestringParser::RulestringParser(const std::string& rulestring) :
-    _str(rulestring), _str_pos(0) {}
+LLCA::RulestringParser::RulestringParser(const std::string& rulestring)
+    : _str(rulestring), _str_pos(0) {}
 
 char LLCA::RulestringParser::eat_char(const std::unordered_set<char>& chars) {
     if (_str_pos > _str.length()) {
@@ -72,13 +72,13 @@ char LLCA::RulestringParser::eat_char(const std::unordered_set<char>& chars) {
         _str_pos++;
         return ch;
     } else {
-        //throw std::invalid_argument("Expected [" + chars + "]");
+        // throw std::invalid_argument("Expected [" + chars + "]");
         throw std::invalid_argument("Expected other chars..");
     }
 }
 
-std::unordered_set<uint8_t> LLCA::RulestringParser::eat_sums(
-        char prefix, char terminator) {
+std::unordered_set<uint8_t>
+    LLCA::RulestringParser::eat_sums(char prefix, char terminator) {
     std::unordered_set<uint8_t> sums;
 
     eat_char({prefix});
@@ -96,8 +96,8 @@ std::unordered_set<uint8_t> LLCA::RulestringParser::eat_sums(
     return sums;
 }
 
-std::unordered_set<Vector2D<LLCA::CellPos>> LLCA::get_cell_neighbors(
-        Vector2D<CellPos> pos) const {
+std::unordered_set<Vector2D<LLCA::CellPos>>
+    LLCA::get_cell_neighbors(Vector2D<CellPos> pos) const {
     std::unordered_set<Vector2D<CellPos>> neighbors;
     for (int8_t x_i = -1; x_i <= 1; x_i++) {
         for (int8_t y_i = -1; y_i <= 1; y_i++) {

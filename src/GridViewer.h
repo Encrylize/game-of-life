@@ -6,7 +6,6 @@
 #include "LLCellularAutomaton.h"
 #include "Window.h"
 
-
 class GridViewer {
 public:
     GridViewer();

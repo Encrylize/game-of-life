@@ -1,9 +1,9 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
-#include <unordered_set>
 #include <set>
 #include <stdint.h>
+#include <unordered_set>
 
 namespace utils {
 template <typename Key>

@@ -1,16 +1,15 @@
 #ifndef _WINDOW_H
 #define _WINDOW_H
 
-#include <memory>
 #include <SDL2/SDL.h>
+#include <memory>
 
 #include "Vector2D.h"
-
 
 class Window {
 public:
     Window(const std::string& title, Vector2D<int> pos, Vector2D<int> size,
-            uint32_t flags);
+           uint32_t flags);
 
     void clear();
     void update();

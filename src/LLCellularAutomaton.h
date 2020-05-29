@@ -6,13 +6,9 @@
 
 #include "Vector2D.h"
 
-
 class LLCellularAutomaton {
 public:
-    enum CellState {
-        DEAD,
-        ALIVE
-    };
+    enum CellState { DEAD, ALIVE };
 
     using CellPos = intmax_t;
 
