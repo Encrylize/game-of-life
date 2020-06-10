@@ -17,6 +17,8 @@ public:
     template <typename U>
     Vector2D& operator+=(const U& other);
     template <typename U>
+    Vector2D& operator-=(const U& other);
+    template <typename U>
     Vector2D& operator/=(const U& div);
 
     T x, y;
@@ -48,6 +50,13 @@ Vector2D<T>& Vector2D<T>::operator+=(const U& other) {
 
 template <typename T>
 template <typename U>
+Vector2D<T>& Vector2D<T>::operator-=(const U& other) {
+    *this = *this - other;
+    return *this;
+}
+
+template <typename T>
+template <typename U>
 Vector2D<T>& Vector2D<T>::operator/=(const U& div) {
     *this = *this / div;
     return *this;
@@ -66,6 +75,11 @@ auto operator-(const Vector2D<T>& a, const Vector2D<U>& b) {
 template <typename T, typename U>
 auto operator/(const Vector2D<T>& vec, const U& div) {
     return Vector2D<decltype(T() / U())>(vec.x / div, vec.y / div);
+}
+
+template <typename T, typename U>
+auto operator*(const Vector2D<T>& vec, const U& mul) {
+    return Vector2D<decltype(T() * U())>(vec.x * mul, vec.y * mul);
 }
 
 template <typename T, typename U>
