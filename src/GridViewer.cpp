@@ -49,6 +49,7 @@ Vector2D<LLCA::CellPos> GridViewer::get_view_size() const {
     return Vector2D<LLCA::CellPos>(std::ceil(vec.x), std::ceil(vec.y));
 }
 
+// TODO: Use state machine
 void GridViewer::loop() {
     Uint32 last_tick = 0;
     Uint32 next_tick = 0;
@@ -77,15 +78,27 @@ void GridViewer::loop() {
                             - (event.key.keysym.sym == SDLK_k));
                     _top_left += move_by;
                 }
-            } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+            } else if (event.type == SDL_MOUSEBUTTONDOWN
+                       && event.button.button == SDL_BUTTON_LEFT) {
                 auto pos = screen_to_cell_pos(event.button.x, event.button.y);
+                _drawing = true;
                 _llca.toggle_cell_state(_top_left + pos);
+                _draw_state = _llca.get_cell_state(_top_left + pos);
+            } else if (event.type == SDL_MOUSEBUTTONUP
+                       && event.button.button == SDL_BUTTON_LEFT) {
+                _drawing = false;
+                // Reset draw cycle
+                last_tick = SDL_GetTicks();
+                next_tick = last_tick + 1000 / _iter_per_sec;
+            } else if (event.type == SDL_MOUSEMOTION && _drawing) {
+                auto pos = screen_to_cell_pos(event.motion.x, event.motion.y);
+                _llca.set_cell_state(_top_left + pos, _draw_state);
             } else if (event.type == SDL_MOUSEWHEEL) {
                 zoom(event.wheel.y * _zoom_step);
             }
         }
 
-        if (_running && SDL_GetTicks() >= next_tick) {
+        if (_running && !_drawing && SDL_GetTicks() >= next_tick) {
             _llca.advance();
             Uint32 ticks_per_update = SDL_GetTicks() - last_tick;
             std::cout << ticks_per_update << std::endl;

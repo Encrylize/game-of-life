@@ -28,6 +28,8 @@ private:
     bool _running;
     unsigned _iter_per_sec;
     float _zoom_factor;
+    bool _drawing;
+    LLCA::CellState _draw_state;
 
     const float _max_zoom;
 
