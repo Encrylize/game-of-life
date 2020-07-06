@@ -1,7 +1,7 @@
 #ifndef _WINDOW_H
 #define _WINDOW_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <memory>
 
 #include "Vector2D.h"
