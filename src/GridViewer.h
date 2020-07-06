@@ -20,7 +20,8 @@ private:
     float get_max_zoom() const;
     unsigned get_cell_size() const;
     unsigned get_grid_width() const;
-    Vector2D<LLCA::CellPos> screen_to_cell_pos(Sint32 x, Sint32 y) const;
+    Vector2D<LLCA::CellPos>
+        screen_to_cell_pos(Vector2D<int32_t> screen_pos) const;
 
     Window _win;
     LLCellularAutomaton _llca;
@@ -38,6 +39,9 @@ private:
     static const unsigned _iter_step;
     static const float _zoom_step;
     static const float _min_zoom;
+    static const Color _grid_color;
+    static const Color _alive_color;
+    static const Color _dead_color;
 };
 
 #endif

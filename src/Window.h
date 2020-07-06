@@ -6,6 +6,10 @@
 
 #include "Vector2D.h"
 
+struct Color {
+    uint8_t r, g, b, a;
+};
+
 class Window {
 public:
     Window(const std::string& title, Vector2D<int> pos, Vector2D<int> size,
@@ -13,10 +17,11 @@ public:
 
     void clear();
     void update();
-    void set_draw_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    void set_draw_color(Color color);
     void draw_rect(Vector2D<int> pos, Vector2D<int> size);
 
     Vector2D<int> get_size() const;
+    Vector2D<int> get_mouse_pos() const;
 
 private:
     std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> _win;

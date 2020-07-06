@@ -10,6 +10,9 @@ const unsigned GridViewer::_iter_step = 1;
 const float GridViewer::_zoom_step = 0.1f;
 const float GridViewer::_min_zoom = 1.0f / _cell_size;    // Equal to one pixel
                                                           // per cell
+const Color GridViewer::_grid_color{127, 127, 127, 255};
+const Color GridViewer::_alive_color{0, 0, 0, 255};
+const Color GridViewer::_dead_color{255, 255, 255, 255};
 
 GridViewer::GridViewer()
     : _win("Title",
@@ -80,10 +83,11 @@ void GridViewer::loop() {
                 }
             } else if (event.type == SDL_MOUSEBUTTONDOWN
                        && event.button.button == SDL_BUTTON_LEFT) {
-                auto pos = screen_to_cell_pos(event.button.x, event.button.y);
+                Vector2D<int32_t> click_pos(event.button.x, event.button.y);
+                auto cell_pos = screen_to_cell_pos(click_pos);
                 _drawing = true;
-                _llca.toggle_cell_state(_top_left + pos);
-                _draw_state = _llca.get_cell_state(_top_left + pos);
+                _llca.toggle_cell_state(cell_pos);
+                _draw_state = _llca.get_cell_state(cell_pos);
             } else if (event.type == SDL_MOUSEBUTTONUP
                        && event.button.button == SDL_BUTTON_LEFT) {
                 _drawing = false;
@@ -91,8 +95,9 @@ void GridViewer::loop() {
                 last_tick = SDL_GetTicks();
                 next_tick = last_tick + 1000 / _iter_per_sec;
             } else if (event.type == SDL_MOUSEMOTION && _drawing) {
-                auto pos = screen_to_cell_pos(event.motion.x, event.motion.y);
-                _llca.set_cell_state(_top_left + pos, _draw_state);
+                Vector2D<int32_t> mouse_pos(event.motion.x, event.motion.y);
+                auto cell_pos = screen_to_cell_pos(mouse_pos);
+                _llca.set_cell_state(cell_pos, _draw_state);
             } else if (event.type == SDL_MOUSEWHEEL) {
                 zoom(event.wheel.y * _zoom_step);
             }
@@ -110,41 +115,42 @@ void GridViewer::loop() {
 }
 
 void GridViewer::zoom(float factor) {
-    Vector2D<int> mouse_pos;
-    SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
-
     // The cursor should be on the same cell before and after zooming
-    auto old_cell_pos = screen_to_cell_pos(mouse_pos.x, mouse_pos.y);
+    auto mouse_pos = _win.get_mouse_pos();
+    auto old_cell_pos = screen_to_cell_pos(mouse_pos);
     _zoom_factor = std::clamp(_zoom_factor + factor, _min_zoom, _max_zoom);
-    auto new_cell_pos = screen_to_cell_pos(mouse_pos.x, mouse_pos.y);
+    auto new_cell_pos = screen_to_cell_pos(mouse_pos);
     _top_left += old_cell_pos - new_cell_pos;
 }
 
-Vector2D<LLCA::CellPos> GridViewer::screen_to_cell_pos(Sint32 x, Sint32 y) const {
-    Vector2D<LLCA::CellPos> pos(x, y);
-    return pos / (get_cell_size() + get_grid_width());
+Vector2D<LLCA::CellPos>
+    GridViewer::screen_to_cell_pos(Vector2D<int32_t> screen_pos) const {
+    Vector2D<LLCA::CellPos> pos(screen_pos.x, screen_pos.y);
+    return _top_left + pos / (get_cell_size() + get_grid_width());
 }
 
 void GridViewer::draw() {
-    _win.set_draw_color(127, 127, 127, 255);
+    _win.set_draw_color(_grid_color);
     _win.clear();
 
-    auto view_size = get_view_size();
+    const auto view_size = get_view_size();
+    const auto cell_size = get_cell_size();
+    const auto grid_width = get_grid_width();
+    const auto size_per_cell = cell_size + grid_width;
+    const Vector2D<int> cell_rect_dimensions(cell_size, cell_size);
 
     for (LLCA::CellPos x = 0; x < view_size.x; x++) {
         for (LLCA::CellPos y = 0; y < view_size.y; y++) {
             auto cell_pos = _top_left + Vector2D<LLCA::CellPos>(x, y);
             if (_llca.get_cell_state(cell_pos) == LLCA::CellState::ALIVE) {
-                _win.set_draw_color(0, 0, 0, 0);
+                _win.set_draw_color(_alive_color);
             } else {
-                _win.set_draw_color(255, 255, 255, 255);
+                _win.set_draw_color(_dead_color);
             }
 
-            const Vector2D<int> pos(
-                x * (get_cell_size() + get_grid_width()) + get_grid_width() / 2,
-                y * (get_cell_size() + get_grid_width()) + get_grid_width() / 2);
-
-            _win.draw_rect(pos, Vector2D<int>(get_cell_size(), get_cell_size()));
+            const Vector2D<int> pos(x * size_per_cell + grid_width / 2,
+                                    y * size_per_cell + grid_width / 2);
+            _win.draw_rect(pos, cell_rect_dimensions);
         }
     }
 

@@ -32,8 +32,8 @@ void Window::update() {
     SDL_RenderPresent(_rend.get());
 }
 
-void Window::set_draw_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
-    SDL_SetRenderDrawColor(_rend.get(), r, g, b, a);
+void Window::set_draw_color(Color color) {
+    SDL_SetRenderDrawColor(_rend.get(), color.r, color.g, color.b, color.a);
 }
 
 void Window::draw_rect(Vector2D<int> pos, Vector2D<int> size) {
@@ -43,4 +43,10 @@ void Window::draw_rect(Vector2D<int> pos, Vector2D<int> size) {
 
 Vector2D<int> Window::get_size() const {
     return _size;
+}
+
+Vector2D<int> Window::get_mouse_pos() const {
+    Vector2D<int> mouse_pos;
+    SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
+    return mouse_pos;
 }
